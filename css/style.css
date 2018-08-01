@@ -1,0 +1,54 @@
+body {
+    background-color: black;
+}
+#container {
+    width: 100%;
+}
+#board {
+
+    width: 50%;
+    margin: auto;
+}
+
+img {
+
+    position: absolute;
+    width: 50px;
+}
+
+#board_image {
+
+    width: 691px;
+    height: 588px;
+    position: relative;
+}
+#button {
+    width: 22%;
+    background-color: #53af13;
+    padding: 5px;
+    margin-left: 60%;
+}
+#inputHtml {
+    background-color: #98cf71;
+}
+#fire {
+    background-color: #98cf71;
+}
+#table_properties {
+    position: absolute;
+    top: 93px;
+    left: 33.8%;
+    height: 460px;
+    width: 456px;
+}
+
+p {
+
+    color: #7DBA25;
+    font-family: ubuntu;
+    z-index: 1;
+    font-size: 15px;
+    padding: 0px;
+    display: inline;
+    margin-left: 7%;
+}
