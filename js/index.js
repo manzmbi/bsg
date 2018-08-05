@@ -1,4 +1,4 @@
-//octopus model
+// octopus model
 var model = {
     rows:6,
     cols : 6,
@@ -131,9 +131,6 @@ var view = {
     },
 }
 model.boardBuilding();
-
-
-
 
 // octopus octopus
 var octopus = {
