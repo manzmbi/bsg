@@ -1,16 +1,11 @@
-
-// creation de l'objet Model " les donnees"
+//octopus model
 var model = {
     rows:6,
     cols : 6,
-
-    // creation de la table et ses differentes lignes et cellules
-    laGrillePhysique : function(){
+    boardBuilding : function(){
         var container = document.getElementById("board");
-        // Creation de l'objet "table" 
-        var table = document.createElement("table");
-        table.setAttribute("id", "table_properties");
-        
+        var tbl = document.createElement("table");
+        tbl.setAttribute("id", "table_properties");
         for(var i=0; i<=this.rows; i++){
             var row = document.createElement("tr");
             for(var j=0; j<=this.cols; j++){
@@ -38,15 +33,13 @@ var model = {
                     cell.setAttribute("id", "G"+j)
                 }
             }
-            table.appendChild(row);
+            tbl.appendChild(row);
         } 
-        container.appendChild(table);
+        container.appendChild(tbl);
     },
 
-
-
-    //la grille virtuel du jeux en javascript
-    grille: [
+    //represent the grid in javascript
+    boardCoordinates: [
         "A0", "A1", "A2", "A3", "A4", "A5", "A6",
         "B0", "B1", "B2", "B3", "B4", "B5", "B6",
         "C0", "C1", "C2", "C3", "C4", "C5", "C6",
@@ -56,16 +49,16 @@ var model = {
         "G0", "G1", "G2", "G3", "G4", "G5", "G6"
     ],
 
-    // valeur de l'input html
-    inputId: "inputHtml",
+    // id of input
+    inputId: "modify_input",
 
-    // valeur du boutton html
-    bouttonId: "fire",
+    // id of button
+    buttonId: "fire_color",
 
-    // Nombre maximum Hit
+    // creating max number of hits
     maxNumberOfHits: 7,
 
-    // Nombre maximum Miss
+    // creating max number of miss
     maxNumberOfMiss: 20,
 
     // creating current number of hits
@@ -87,25 +80,25 @@ var model = {
     currentNumberOfHitsId: "currentNumberOfHits",
 
     // text to indicate the max number of miss
-    maxNumberOfMissText: "Le nombre max de Miss est : ",
+    maxNumberOfMissText: "The max number of miss is: ",
 
     // text to indicate the max number of hits
-    maxNumberOfHitsText: "Le nombre max de Hit est: ",
+    maxNumberOfHitsText: "The max number of hits is: ",
 
     // text to indicate the current number of miss
-    currentNumberOfMissText: "Le nombre actuel de Miss est: ",
+    currentNumberOfMissText: "The current number of miss is: ",
 
     // text to indicate the current number of hits
-    currentNumberOfHitsText: "Le nombre actuel de Hit est: ",
+    currentNumberOfHitsText: "The current number of hits is: ",
 
     // message to notify the user that he has win the game
-    winningNotification: "Bravo, Vous avez gagne!",
+    winningNotification: "You sank my battleship",
 
     // message to notify the user that he has already enter a guess
-    guessAlreadyEntered: " Ces coordonnees ont deja ete choisies",
+    guessAlreadyEntered: " has already entered",
 
     // message to notify the user that he has enter an incorrect guess
-    incorrectGuessNotified: " Vous avez entre une mauvaise valeur !",
+    incorrectGuessNotified: "Incorrect guess !",
 
     // correct guess for store the correctGuess entered by the user
     correctGuess: [],
@@ -113,179 +106,170 @@ var model = {
     // given guess limit for the end of the game
     hitLimit: [],
 
-    // les images "Miss" et "Ship"
+    // image displayed
     images: ["<img src = images/miss.png>", "<img src = images/ship.png>"]
 }
 
-
-
-
-
-
-// l'objet "vue du system"
+// octopus view
 var view = {
-    // fonction "Afficher un message sur la fenetre flottante"
-    afficheMessage: function(message){
+    // display message in a floating window
+    displayMessage: function(message){
 
         alert(message);
     },
 
-    // Fonction afficher "Miss" ou "Ship"
+    // display miss or hit image
     displayHitOrMiss: function(tdId, image) {
 
         document.getElementById(tdId).innerHTML = image;
     },
 
-    // afficher les Infos sur les parametres suivants
+    // display game rules
     displayGameRules: function (paragraphId, text, number) {
 
         document.getElementById(paragraphId).innerHTML = text + number;
     },
 }
-model.laGrillePhysique();
+model.boardBuilding();
 
 
 
 
-
-
-//  Object "Octopus"
+// octopus octopus
 var octopus = {
 
-    // Fonction generer les bateaux aletoirement dans la grille
-    afficherInfos: function () {
+    // show to the user the game rules and his evolution
+    showGameRules: function () {
 
-        // Elle pemettra d'Afficher le nombre maximum de Miss
+        // show the max number of miss
         view.displayGameRules(model.maxNumberOfMissId, model.maxNumberOfMissText, model.maxNumberOfMiss);
 
-        // Elle pemettra d'Afficher le nombre maximum de Hit
+        // show the max number of hits
         view.displayGameRules(model.maxNumberOfHitsId, model.maxNumberOfHitsText, model.maxNumberOfHits);
 
-        // Elle pemettra d'Afficher le nombre actuel de Hit
+        // show the current number of hits found by the user
         view.displayGameRules(model.currentNumberOfHitsId, model.currentNumberOfHitsText, model.currentNumberOfHits);
 
-        // Elle pemettra d'Afficher le nombre actuel de Miss
+        // show the current number of miss found by the user
         view.displayGameRules(model.currentNumberOfMissId, model.currentNumberOfMissText, model.currentNumberOfMiss);
     },
 
-    // Fonction generer les bateaux aletoirement dans la grille
-    genereLeBateauxDansLagrilleAlea: function(hitNumber) {
+    // creating random ships
+    createShipsCoordinate: function(hitNumber) {
 
-        // creation de l'objet contenant les coordonnees utilisees
-        var coordonneDejaUtilisees = [];
+        // creating empty array to add coordinate inside
+        var shipsArray = [];
         for (i = 0; i < model.maxNumberOfHits; i ++) {
 
-            // selection aleatoire d'une coordonnee dans la grille et la stocker dans un nouveau objet
-            var coordonneGenereAlea = model.grille[Math.floor(Math.random() * model.grille.length)];
+            // take a random string in boardCoordinates
+            var coordinate = model.boardCoordinates[Math.floor(Math.random() * model.boardCoordinates.length)];
 
-            // Verification des coordonnees invalides et ajout de celle valides
-            if (coordonneDejaUtilisees.indexOf(coordonneGenereAlea) !== -1) {
+            // add coordinate inside shipArray if it is not contained inside
+            if (shipsArray.indexOf(coordinate) !== -1) {
                 i -= 1;
             } else {
-                // stocker les coordonnees non utilisees
-                coordonneDejaUtilisees.push(coordonneGenereAlea);
+                shipsArray.push(coordinate);
             }
         }
-        return coordonneDejaUtilisees;
+        return shipsArray;
     },
 
-    // Verification des coordonnees entrees par l'utilisateur
-    verifiEntreeUtilisateur: function () {
+    // evaluate the value that the user enters
+    verifyUserInput: function () {
 
-        // Recuperation des coordonnees entree par Utilisateur et sa mise en miniscule
-        var coordonneeUtilisateur = document.getElementById(model.inputId).value.toUpperCase();
+        // creating objects
+        // the value entered by the user
+        var guessInput = document.getElementById(model.inputId).value.toUpperCase();
 
-        // creation d'un objet contenant les coordonnees deja utilisees par l'utilisateur
-        var valeurDejaUtilisees = [];
+        // check string for store the guessInput
+        var valueEnterByTheUser = [];
 
-        for (index = 0; index < model.grille.length; index ++) {
+        // swiping the array
+        for (index = 0; index < model.boardCoordinates.length; index ++) {
 
-            if (coordonneeUtilisateur === model.grille[index]) {
+            if (guessInput === model.boardCoordinates[index]) {
 
-                // stocker les valeurs non utilisees
-                valeurDejaUtilisees.push(coordonneeUtilisateur);
+                // give the value entered by the user to a valueEnterByTheUser
+                valueEnterByTheUser.push(guessInput);
                 break;
             }
         }
 
+        // Verify if guess
+        // verify if the value that the user enter is contained inside the table
+        // when the user enter a correct guess
+        if (valueEnterByTheUser.length == 1) {
 
+            // verify if this guess is already contained in the property correctGuess located inside the model
+            // when the guessInput already exist
+            if (model.correctGuess.indexOf(guessInput) == -1) {
 
+                // evaluate hit or miss
+                if (octopus.createShipsCoordinate().indexOf(guessInput) == -1) {
 
+                    // display a miss
+                    view.displayHitOrMiss(guessInput, model.images[0]);
 
-        // Verification des coordonnes valides
-        if (valeurDejaUtilisees.length == 1) {
-
-            //  Verification si ses coordonnees ne sont pas deja dans la liste de celles-ci valides
-            if (model.correctGuess.indexOf(coordonneeUtilisateur) == -1) {
-
-                //  Verification si les coordonnees saisies ne sont pas dans la grille
-                if (octopus.genereLeBateauxDansLagrilleAlea().indexOf(coordonneeUtilisateur) == -1) {
-
-                    //  Afficher l'image "miss"
-                    view.displayHitOrMiss(coordonneeUtilisateur, model.images[0]);
-
-                    // Afficher le nombre actuel de Miss
+                    // show the current number of miss found by the user
                     view.displayGameRules(model.currentNumberOfMissId, model.currentNumberOfMissText, model.currentNumberOfMiss += 1);
                 } else {
 
-                    // conserver les coordonnees de l'Utilisateur dans un objet "limiteDeJouer"
-                    model.hitLimit.push(coordonneeUtilisateur);
+                    // keep the guessInput in the hitLimit
+                    model.hitLimit.push(guessInput);
 
-                    //  Afficher l'image "Ship"
-                    view.displayHitOrMiss(coordonneeUtilisateur, model.images[1]);
+                    // display a hit
+                    view.displayHitOrMiss(guessInput, model.images[1]);
 
-                    //  Afficher le nombre courant d'essaie
+                    // show the current number of hits found by the user
                     view.displayGameRules(model.currentNumberOfHitsId, model.currentNumberOfHitsText, model.currentNumberOfHits += 1);
 
-                    // Afficher un message a la fin du Jeux
-                    if (model.hitLimit.length == octopus.genereLeBateauxDansLagrilleAlea().length) {
+                    // display a message which mean the end of game when user has sank all the ships
+                    if (model.hitLimit.length == octopus.createShipsCoordinate().length) {
 
-                        view.afficheMessage(model.winningNotification);
+                        view.displayMessage(model.winningNotification);
                     }
                 }
             }
 
-            // Quand les coordonnees de l'Utilisateur sont deja dans la liste Des Entree Valide
+            // when the guessInput is not already in correctGuess
             else {
 
-                // Afficher les coordonnees saisies sont deja utilisees
-                view.afficheMessage(coordonneeUtilisateur + model.guessAlreadyEntered);
+                // notify him that the guessInput already exist in correctGuess
+                view.displayMessage(guessInput + model.guessAlreadyEntered);
             }
 
-            // conserver les coordonnees de l'Utilisateur dans un objet "listeDesEntreeValide"
-            model.correctGuess.push(coordonneeUtilisateur);
+            // store the guessInput in correctGuess in the model
+            model.correctGuess.push(guessInput);
         }
 
-        //  Quand il saisi les coordonnes non valides "Afficher ..."
+        // when the user enter incorrect guess
         else {
-            view.afficheMessage(model.incorrectGuessNotified);
+            view.displayMessage(model.incorrectGuessNotified);
         }
     }
 }
 
-
-
-
-// Controlleur des evenements
+// octopus event
 var eventHandler = {
 
-    // Creation de la fonction clique Sur boutton
-    cliqueSurFire: function () {
-        document.getElementById(model.bouttonId).onclick = octopus.verifiEntreeUtilisateur;
-        document.getElementById(model.inputId).addEventListener("keypress", eventHandler.evenementEntrer);
+    // the user click on fire button
+    clickFireButton: function () {
+
+        document.getElementById(model.buttonId).onclick = octopus.verifyUserInput;
+        document.getElementById(model.inputId).addEventListener("keypress", eventHandler.enterEvent);
 
         // show the max number of miss
-        octopus.afficherInfos();
+        octopus.showGameRules();
     },
 
-    evenementEntrer: function(event) {
+    enterEvent: function(event) {
 
         // the user press on return
         if (event.key === "Enter") {
-            octopus.verifiEntreeUtilisateur();
+            octopus.verifyUserInput();
         }
     }
 }
 
 // after loading all the page, call a callback function
-window.onload = eventHandler.cliqueSurFire;
+window.onload = eventHandler.clickFireButton;
